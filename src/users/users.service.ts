@@ -1,48 +1,37 @@
 import { Injectable } from '@nestjs/common';
+import { PrismaService } from '../prisma/prisma.service';
 import { CreateUserDto } from './dto/create-user.dto';
 
 @Injectable()
 export class UsersService {
-  private users: { id: number; name: string; email: string; age: number }[] = [];
+  constructor(private prisma: PrismaService) {}
 
   getUsers() {
-    return this.users;
+    return this.prisma.user.findMany();
   }
 
   getUserById(id: number) {
-    return this.users.find((user) => user.id === id);
+    return this.prisma.user.findUnique({
+      where: { id },
+    });
   }
 
   createUser(createUserDto: CreateUserDto) {
-    const newUser = {
-      id: this.users.length + 1,
-      ...createUserDto,
-    };
-
-    this.users.push(newUser);
-
-    return newUser;
+    return this.prisma.user.create({
+      data: createUserDto,
+    });
   }
 
   updateUser(id: number, updateData: Partial<CreateUserDto>) {
-  const user = this.users.find((u) => u.id === id);
-
-  if (!user) {
-    return { message: 'User not found' };
+    return this.prisma.user.update({
+      where: { id },
+      data: updateData,
+    });
   }
 
-  Object.assign(user, updateData);
-
-  return user;
-}
-
-deleteUser(id: number) {
-  this.users = this.users.filter(
-    (user) => user.id !== id,
-  );
-
-  return {
-    message: 'User deleted successfully',
-  };
-}
+  deleteUser(id: number) {
+    return this.prisma.user.delete({
+      where: { id },
+    });
+  }
 }

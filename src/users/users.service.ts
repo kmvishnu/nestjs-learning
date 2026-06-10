@@ -16,11 +16,6 @@ export class UsersService {
     });
   }
 
-  createUser(createUserDto: CreateUserDto) {
-    return this.prisma.user.create({
-      data: createUserDto,
-    });
-  }
 
   updateUser(id: number, updateData: Partial<CreateUserDto>) {
     return this.prisma.user.update({
